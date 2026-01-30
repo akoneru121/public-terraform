@@ -1,0 +1,90 @@
+# ==============================================================================
+# Terraform .gitignore
+# ==============================================================================
+# This file prevents sensitive and generated files from being committed to git.
+# CRITICAL: Never commit terraform.tfstate or .tfstate.backup files!
+# ==============================================================================
+
+# Terraform State Files
+# NEVER commit state files - they may contain sensitive data (passwords, keys)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform.tfstate.lock.info
+
+# Terraform Local Directory
+# Contains provider plugins and modules - should be regenerated via terraform init
+.terraform/
+.terraform.lock.hcl
+
+# Crash Logs
+# Terraform crash dump files
+crash.log
+crash.*.log
+
+# Override Files
+# Local overrides should not be committed
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI Configuration
+# Personal Terraform CLI configuration
+.terraformrc
+terraform.rc
+
+# Sensitive Variable Files
+# Files that may contain secrets
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+secret.tfvars
+secrets.tfvars
+
+# Plan Files
+# Binary terraform plan files
+*.tfplan
+tfplan
+tfplan.out
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build Artifacts
+dist/
+build/
+*.zip
+
+# Log Files
+*.log
+logs/
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# AWS Credentials (if accidentally placed here)
+.aws/
+credentials
+config
+
+# Kubernetes Config
+.kube/
+kubeconfig
+kubeconfig.yaml
+
+# Infracost
+.infracost/
+infracost.json
+
+# Security Scan Results
+tfsec-results.*
+checkov-results.*
