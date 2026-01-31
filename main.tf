@@ -8,7 +8,7 @@
 # Data sources
 data "aws_availability_zones" "available" {
   state = "available"
-  
+
   filter {
     name   = "opt-in-status"
     values = ["opt-in-not-required"]
@@ -23,7 +23,7 @@ data "aws_caller_identity" "current" {}
 locals {
   cluster_name = "${var.project_name}-eks"
   account_id   = data.aws_caller_identity.current.account_id
-  
+
   common_tags = {
     Project     = var.project_name
     ManagedBy   = "Terraform"
@@ -41,10 +41,10 @@ module "vpc" {
   project_name = var.project_name
   vpc_cidr     = var.vpc_cidr
 
-  public_subnets  = var.public_subnets
+  public_subnets = var.public_subnets
 
 
-  common_tags  = local.common_tags
+  common_tags = local.common_tags
 }
 
 # ==============================================================================
@@ -53,14 +53,14 @@ module "vpc" {
 module "eks" {
   source = "./modules/eks"
 
-  project_name       = var.project_name
-  vpc_id             = module.vpc.vpc_id
+  project_name = var.project_name
+  vpc_id       = module.vpc.vpc_id
 
-  subnet_ids         = module.vpc.public_subnet_ids
+  subnet_ids = module.vpc.public_subnet_ids
 
-  kubernetes_version = var.kubernetes_version
+  kubernetes_version     = var.kubernetes_version
   endpoint_public_access = true
-  common_tags        = local.common_tags
+  common_tags            = local.common_tags
 
   depends_on = [module.vpc]
 }
@@ -76,14 +76,14 @@ module "node_groups" {
   cluster_name              = module.eks.cluster_name
   cluster_security_group_id = module.eks.cluster_security_group_id
 
-  subnet_ids                = module.vpc.public_subnet_ids
+  subnet_ids = module.vpc.public_subnet_ids
 
-  instance_types            = var.instance_types
-  capacity_type             = var.capacity_type
-  desired_size              = var.node_group_desired_size
-  min_size                  = var.node_group_min_size
-  max_size                  = var.node_group_max_size
-  common_tags               = local.common_tags
+  instance_types = var.instance_types
+  capacity_type  = var.capacity_type
+  desired_size   = var.node_group_desired_size
+  min_size       = var.node_group_min_size
+  max_size       = var.node_group_max_size
+  common_tags    = local.common_tags
 
   depends_on = [module.eks]
 }

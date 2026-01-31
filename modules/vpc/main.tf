@@ -10,7 +10,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = merge(var.common_tags, {
-    Name = "${var.project_name}-vpc"
+    Name                                            = "${var.project_name}-vpc"
     "kubernetes.io/cluster/${var.project_name}-eks" = "shared"
   })
 }
@@ -40,10 +40,10 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(var.common_tags, {
-    Name                                             = "${var.project_name}-public-subnet-${count.index + 1}"
-    "kubernetes.io/role/elb"                         = "1"
+    Name                                            = "${var.project_name}-public-subnet-${count.index + 1}"
+    "kubernetes.io/role/elb"                        = "1"
     "kubernetes.io/cluster/${var.project_name}-eks" = "shared"
-    Tier                                             = "Public"
+    Tier                                            = "Public"
   })
 }
 

@@ -49,11 +49,11 @@ resource "aws_security_group" "eks_nodes" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "Allow nodes to communicate with each other"
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    self            = true
+    description = "Allow nodes to communicate with each other"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
   }
 
   ingress {
@@ -80,7 +80,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 
   tags = merge(var.common_tags, {
-    Name                                             = "${var.project_name}-eks-nodes-sg"
+    Name                                        = "${var.project_name}-eks-nodes-sg"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   })
 }
