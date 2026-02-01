@@ -33,11 +33,18 @@ resource "aws_internet_gateway" "main" {
 # ==============================================================================
 
 resource "aws_subnet" "public" {
-  count                   = 3
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnets[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  count             = 3
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnets[count.index]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
   map_public_ip_on_launch = true
+
+  lifecycle {
+    ignore_changes = [
+      map_public_ip_on_launch
+    ]
+  }
 
   tags = merge(var.common_tags, {
     Name                                            = "${var.project_name}-public-subnet-${count.index + 1}"
@@ -46,6 +53,7 @@ resource "aws_subnet" "public" {
     Tier                                            = "Public"
   })
 }
+
 
 
 
