@@ -15,10 +15,10 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = 'us-east-1'
-        PROJECT_NAME = 'public'
-        TF_IN_AUTOMATION = 'true'
-        TF_INPUT = 'false'
+        AWS_REGION        = 'us-east-1'
+        PROJECT_NAME      = 'public'
+        TF_IN_AUTOMATION  = 'true'
+        TF_INPUT          = 'false'
     }
 
     options {
@@ -73,11 +73,16 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 echo "📋 Running Terraform plan..."
-                sh '''
-                    terraform plan \
-                      -out=tfplan \
-                      -no-color | tee plan.txt
-                '''
+
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins-creds'
+                ]]) {
+                    sh '''
+                        export AWS_REGION=${AWS_REGION}
+                        terraform plan -out=tfplan -no-color | tee plan.txt
+                    '''
+                }
 
                 archiveArtifacts artifacts: 'tfplan,plan.txt', fingerprint: true
 
@@ -117,9 +122,18 @@ pipeline {
             }
             steps {
                 echo "🚀 Applying Terraform changes..."
-                sh 'terraform apply -auto-approve tfplan'
 
-                sh 'terraform output -json > outputs.json'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins-creds'
+                ]]) {
+                    sh '''
+                        export AWS_REGION=${AWS_REGION}
+                        terraform apply -auto-approve tfplan
+                        terraform output -json > outputs.json
+                    '''
+                }
+
                 archiveArtifacts artifacts: 'outputs.json', fingerprint: true
             }
         }
@@ -130,7 +144,16 @@ pipeline {
             }
             steps {
                 echo "🗑️ Destroying Terraform resources..."
-                sh 'terraform destroy -auto-approve'
+
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins-creds'
+                ]]) {
+                    sh '''
+                        export AWS_REGION=${AWS_REGION}
+                        terraform destroy -auto-approve
+                    '''
+                }
             }
         }
     }
