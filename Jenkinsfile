@@ -58,9 +58,14 @@ pipeline {
             steps {
                 echo "📋 Running Terraform plan..."
 
-                withAWS(credentials: 'aws-jenkins-creds', region: "${AWS_REGION}") {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-jenkins-creds']
+                ]) {
                     sh '''
+                        export AWS_DEFAULT_REGION=${AWS_REGION}
                         aws sts get-caller-identity
+
                         terraform plan -out=tfplan -no-color | tee plan.txt
                     '''
                 }
@@ -92,12 +97,19 @@ pipeline {
                 expression { params.ACTION == 'apply' && env.HAS_CHANGES == 'true' }
             }
             steps {
-                withAWS(credentials: 'aws-jenkins-creds', region: "${AWS_REGION}") {
+                echo "🚀 Applying Terraform changes..."
+
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-jenkins-creds']
+                ]) {
                     sh '''
+                        export AWS_DEFAULT_REGION=${AWS_REGION}
                         terraform apply -auto-approve tfplan
                         terraform output -json > outputs.json
                     '''
                 }
+
                 archiveArtifacts artifacts: 'outputs.json', fingerprint: true
             }
         }
@@ -107,8 +119,16 @@ pipeline {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
-                withAWS(credentials: 'aws-jenkins-creds', region: "${AWS_REGION}") {
-                    sh 'terraform destroy -auto-approve'
+                echo "🗑️ Destroying Terraform resources..."
+
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-jenkins-creds']
+                ]) {
+                    sh '''
+                        export AWS_DEFAULT_REGION=${AWS_REGION}
+                        terraform destroy -auto-approve
+                    '''
                 }
             }
         }
