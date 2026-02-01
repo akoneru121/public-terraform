@@ -50,20 +50,20 @@ module "vpc" {
 # ==============================================================================
 # EKS Module
 # ==============================================================================
-# module "eks" {
-#   source = "./modules/eks"
+ module "eks" {
+   source = "./modules/eks"
 
-#   project_name = var.project_name
-#   vpc_id       = module.vpc.vpc_id
+   project_name = var.project_name
+   vpc_id       = module.vpc.vpc_id
 
-#   subnet_ids = module.vpc.public_subnet_ids
+   subnet_ids = module.vpc.public_subnet_ids
 
-#   kubernetes_version     = var.kubernetes_version
-#   endpoint_public_access = true
-#   common_tags            = local.common_tags
+   kubernetes_version     = var.kubernetes_version
+   endpoint_public_access = true
+   common_tags            = local.common_tags
 
-#   depends_on = [module.vpc]
-# }
+   depends_on = [module.vpc]
+}
 
 # ==============================================================================
 # Node Groups Module
